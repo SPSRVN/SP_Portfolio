@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XR Device Showcase | Spatial Computing Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #060810;
+        }
+
+        body {
+            background: var(--bg);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Orbitron', monospace;
+            color: #fff;
+            user-select: none;
+        }
+
+        #webgl {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            display: block;
+        }
+
+        /* ── LOADING ── */
+        #loading {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            transition: opacity 0.6s ease;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading.gone {
+            display: none;
+        }
+
+        .ld-title {
+            font-size: 11px;
+            letter-spacing: 0.5em;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .ld-bar-wrap {
+            width: 260px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .ld-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00f5ff, #a855f7);
+            transition: width 0.3s ease;
+        }
+
+        .ld-pct {
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ── UI ── */
+        #ui {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s;
+        }
+
+        #ui.visible {
+            opacity: 1;
+        }
+
+        #prog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 2px;
+            width: 33.33%;
+            background: linear-gradient(90deg, #00f5ff, #a855f7);
+            transition: width .8s cubic-bezier(.76, 0, .24, 1), background .8s;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .back {
+            position: absolute;
+            top: 26px;
+            left: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            letter-spacing: .25em;
+            color: rgba(255, 255, 255, .3);
+            text-decoration: none;
+            pointer-events: all;
+            transition: color .3s;
+        }
+
+        .back:hover {
+            color: rgba(255, 255, 255, .8);
+        }
+
+        .badge {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            letter-spacing: .45em;
+            color: rgba(255, 255, 255, .14);
+        }
+
+        #glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00f5ff 0%, transparent 70%);
+            opacity: .06;
+            pointer-events: none;
+            transition: background 1s;
+        }
+
+        /* Device info */
+        #info {
+            position: absolute;
+            bottom: 90px;
+            left: 60px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .5s, transform .5s;
+        }
+
+        #info.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            letter-spacing: .45em;
+            color: rgba(255, 255, 255, .3);
+            margin-bottom: 10px;
+        }
+
+        .dname {
+            font-size: clamp(22px, 5vw, 54px);
+            font-weight: 900;
+            line-height: 1.05;
+            background: linear-gradient(120deg, #00f5ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dspec {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .4);
+            margin-top: 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            max-width: 340px;
+            line-height: 1.7;
+        }
+
+        .dtags {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 8px;
+            letter-spacing: .18em;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 20px;
+            padding: 4px 12px;
+            color: rgba(255, 255, 255, .3);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Dots */
+        .dots {
+            position: absolute;
+            right: 38px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            pointer-events: all;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, .22);
+            background: transparent;
+            cursor: pointer;
+            transition: all .35s;
+            position: relative;
+        }
+
+        .dot.on {
+            background: rgba(255, 255, 255, .88);
+            border-color: rgba(255, 255, 255, .88);
+            box-shadow: 0 0 10px rgba(255, 255, 255, .4);
+        }
+
+        .dot:hover {
+            border-color: rgba(255, 255, 255, .55);
+        }
+
+        .dot[data-lbl]::before {
+            content: attr(data-lbl);
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 8px;
+            letter-spacing: .2em;
+            color: rgba(255, 255, 255, .35);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity .2s;
+            pointer-events: none;
+        }
+
+        .dot:hover::before {
+            opacity: 1;
+        }
+
+        /* Scroll hint */
+        #hint {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 8px;
+            letter-spacing: .42em;
+            color: rgba(255, 255, 255, .2);
+            transition: opacity .5s;
+        }
+
+        .chev {
+            width: 14px;
+            height: 14px;
+            border-right: 1.5px solid rgba(255, 255, 255, .2);
+            border-bottom: 1.5px solid rgba(255, 255, 255, .2);
+            transform: rotate(45deg);
+            animation: cp 1.8s ease-in-out infinite;
+        }
+
+        @keyframes cp {
+
+            0%,
+            100% {
+                opacity: .2;
+                transform: rotate(45deg) translate(0, 0);
+            }
+
+            50% {
+                opacity: .7;
+                transform: rotate(45deg) translate(3px, 3px);
+            }
+        }
+
+        @media(max-width:768px) {
+            #info {
+                bottom: 110px;
+                left: 24px;
+                right: 24px;
+            }
+
+            .dots {
+                right: 18px;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="loading">
+        <div class="ld-title">LOADING XR DEVICES</div>
+        <div class="ld-bar-wrap">
+            <div class="ld-bar" id="lbar"></div>
+        </div>
+        <div class="ld-pct" id="lpct">0%</div>
+    </div>
+
+    <canvas id="webgl"></canvas>
+
+    <div id="ui">
+        <div id="prog"></div>
+        <a href="index.html" class="back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            PORTFOLIO
+        </a>
+        <div class="badge">XR DEVICE SHOWCASE</div>
+        <div id="glow"></div>
+
+        <div id="info">
+            <div class="eyebrow" id="eyebrow">01 &nbsp;/&nbsp; 03</div>
+            <div class="dname" id="dname">META QUEST 3</div>
+            <div class="dspec" id="dspec"></div>
+            <div class="dtags" id="dtags"></div>
+        </div>
+
+        <div class="dots">
+            <button class="dot on" data-page="0" data-lbl="QUEST 3"></button>
+            <button class="dot" data-page="1" data-lbl="VISION PRO"></button>
+            <button class="dot" data-page="2" data-lbl="QUEST FLEET"></button>
+        </div>
+
+        <div id="hint"><span>SCROLL</span>
+            <div class="chev"></div>
+        </div>
+    </div>
+
+    <!-- on-screen debug — shows image load status -->
+    <div id="dbg"></div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        //  CONFIG — edit image filenames if yours differ
+        // ═══════════════════════════════════════════════
+        const IMAGES = {
+            quest3: 'Quest3.png',      // white/light device on dark background
+            vision: 'VisionPro.png',   // same style for Vision Pro
+        };
+
+        const N = 4000;  // particle count
+
+        const PAGES = [
+            {
+                eyebrow: '01 &nbsp;/&nbsp; 03', name: 'META QUEST 3',
+                spec: 'Mixed Reality headset with full-color passthrough, 3D spatial awareness, and Meta XR SDK — built for multiplayer VR and enterprise training.',
+                tags: ['MR PASSTHROUGH', 'HAND TRACKING', 'META XR SDK'],
+                c1: '#00f5ff', c2: '#a855f7', glow: '#00f5ff',
+                barG: 'linear-gradient(90deg,#00f5ff,#a855f7)', barW: '33.33%',
+            },
+            {
+                eyebrow: '02 &nbsp;/&nbsp; 03', name: 'APPLE VISION PRO',
+                spec: 'Spatial computing with eye tracking, hand gestures, and visionOS — delivering premium immersive experiences and high-fidelity product visualization.',
+                tags: ['EYE TRACKING', 'VISIONOS', 'SPATIAL AUDIO'],
+                c1: '#a855f7', c2: '#f0abfc', glow: '#a855f7',
+                barG: 'linear-gradient(90deg,#a855f7,#f0abfc)', barW: '66.66%',
+            },
+            {
+                eyebrow: '03 &nbsp;/&nbsp; 03', name: 'QUEST 3 FLEET',
+                spec: 'Enterprise XR deployment — synchronized multi-device sessions for collaborative training, safety simulations, and scalable immersive onboarding.',
+                tags: ['ENTERPRISE XR', 'MULTIPLAYER', 'FLEET MGMT'],
+                c1: '#ec4899', c2: '#00f5ff', glow: '#ec4899',
+                barG: 'linear-gradient(90deg,#ec4899,#00f5ff)', barW: '100%',
+            },
+        ];
+
+        // ═══════════════════════════════════════════════
+        //  IMAGE → POINT CLOUD SAMPLER
+        // ═══════════════════════════════════════════════
+        function dbgLine(msg) {
+            const el = document.getElementById('dbg');
+            if (el) el.innerHTML += msg + '<br>';
+            console.log('[XR]', msg);
+        }
+
+        function sampleCanvas(img, n, spread, threshold) {
+            const W = Math.min(img.width, 640);
+            const H = Math.round(img.height * W / img.width);
+
+            // Create/Update Debug Preview Canvas
+            let debugCanvas = document.getElementById('debug-preview');
+            if (!debugCanvas) {
+                debugCanvas = document.createElement('canvas');
+                debugCanvas.id = 'debug-preview';
+                debugCanvas.style.position = 'fixed';
+                debugCanvas.style.top = '60px';
+                debugCanvas.style.right = '60px';
+                debugCanvas.style.width = '180px';
+                debugCanvas.style.border = '1px solid rgba(255,255,255,0.15)';
+                debugCanvas.style.zIndex = '1000';
+                debugCanvas.style.background = '#000';
+                document.body.appendChild(debugCanvas);
+            }
+            debugCanvas.width = W;
+            debugCanvas.height = H;
+
+            const cx = document.createElement('canvas');
+            cx.width = W; cx.height = H;
+            const ctx = cx.getContext('2d');
+            ctx.drawImage(img, 0, 0, W, H);
+
+            let pixels;
+            try {
+                pixels = ctx.getImageData(0, 0, W, H).data;
+            } catch (e) {
+                dbgLine('CORS/Taint Error: ' + e.message);
+                return null;
+            }
+
+            // Auto-Threshold Logic
+            let candidates = [];
+            let currentThr = threshold;
+            let attempts = 0;
+
+            while (candidates.length < n * 0.4 && attempts < 6) {
+                candidates = [];
+                for (let y = 0; y < H; y++) {
+                    for (let x = 0; x < W; x++) {
+                        const i = (y * W + x) * 4;
+                        const lum = pixels[i] * 0.299 + pixels[i + 1] * 0.587 + pixels[i + 2] * 0.114;
+                        if (lum > currentThr) candidates.push(x, y, lum);
+                    }
+                }
+                if (candidates.length < n * 0.4) {
+                    currentThr = Math.max(5, currentThr - 5);
+                    attempts++;
+                } else break;
+            }
+
+            // Draw selection mask to debug canvas
+            const dCtx = debugCanvas.getContext('2d');
+            dCtx.drawImage(img, 0, 0, W, H);
+            dCtx.fillStyle = 'rgba(0, 255, 0, 0.4)'; // green tint for sampled area
+            for (let i = 0; i < candidates.length; i += 3) {
+                dCtx.fillRect(candidates[i], candidates[i + 1], 1, 1);
+            }
+
+            dbgLine(`${img.src.split('/').pop().split('?')[0]}: ${W}×${H}, ${candidates.length / 3 | 0} px (thr=${currentThr})`);
+            if (candidates.length < 9) return null;
+
+            const aspect = H / W;
+            const totalC = candidates.length / 3;
+            const result = new Float32Array(n * 3);
+            for (let i = 0, j = 0; i < n; i++, j += 3) {
+                const idx = Math.floor(Math.random() * totalC) * 3;
+                const px = candidates[idx];
+                const py = candidates[idx + 1];
+                const lum = candidates[idx + 2];
+
+                // Map pixel coords → world coords
+                result[j] = (px / W - 0.5) * spread + (Math.random() - 0.5) * 0.04;
+                result[j + 1] = -(py / H - 0.5) * spread * aspect + (Math.random() - 0.5) * 0.04;
+                result[j + 2] = (lum / 255) * 0.5 - 0.1 + (Math.random() - 0.5) * 0.12;
+            }
+            return result;
+        }
+
+        function imageToCloud(url, n, spread, threshold) {
+            threshold = threshold || 15;
+            spread = spread || 3.8;
+            return new Promise(resolve => {
+                const img = new Image();
+                // No crossOrigin — avoids canvas taint issues with Live Server
+                img.onload = () => resolve(sampleCanvas(img, n, spread, threshold));
+                img.onerror = () => { dbgLine('❌ FAILED: ' + url); resolve(null); };
+                img.src = url + '?v=' + Date.now(); // cache-bust
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        //  FLEET BUILDER  — 3 Quest 3 instances
+        // ═══════════════════════════════════════════════
+        function makeFleet(questPts) {
+            const result = new Float32Array(N * 3);
+            const total = questPts.length / 3;
+
+            // Center gets more particles (heavier weight)
+            const INST = [
+                { ox: -2.4, oy: 0.22, sc: 0.52, rot: -0.30, w: 0.28 },
+                { ox: 0.0, oy: -0.12, sc: 0.68, rot: 0.03, w: 0.44 },
+                { ox: 2.4, oy: 0.22, sc: 0.52, rot: 0.30, w: 0.28 },
+            ];
+            function pick() {
+                let r = Math.random(), acc = 0;
+                for (const d of INST) { acc += d.w; if (r < acc) return d; }
+                return INST[2];
+            }
+
+            for (let i = 0, j = 0; i < N; i++, j += 3) {
+                const { ox, oy, sc, rot } = pick();
+                const idx = Math.floor(Math.random() * total) * 3;
+
+                let px = questPts[idx] * sc;
+                let py = questPts[idx + 1] * sc;
+                const pz = questPts[idx + 2] * sc;
+
+                const cos = Math.cos(rot), sin = Math.sin(rot);
+                result[j] = px * cos - py * sin + ox;
+                result[j + 1] = px * sin + py * cos + oy;
+                result[j + 2] = pz;
+            }
+            return result;
+        }
+
+        // ═══════════════════════════════════════════════
+        //  SCATTER CLOUD (transition idle state)
+        // ═══════════════════════════════════════════════
+        function makeCloud() {
+            const a = new Float32Array(N * 3);
+            for (let i = 0; i < N * 3; i += 3) {
+                const phi = Math.acos(2 * Math.random() - 1);
+                const theta = Math.random() * Math.PI * 2;
+                const r = Math.cbrt(Math.random()) * 6;
+                a[i] = r * Math.sin(phi) * Math.cos(theta);
+                a[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+                a[i + 2] = r * Math.cos(phi);
+            }
+            return a;
+        }
+
+        // ═══════════════════════════════════════════════
+        //  PARAMETRIC FALLBACKS (if images missing)
+        // ═══════════════════════════════════════════════
+        function fallbackQuest() {
+            const a = new Float32Array(N * 3);
+            const S = 2.4;
+            for (let i = 0, j = 0; i < N; i++, j += 3) {
+                const r = Math.random();
+                let x, y, z;
+
+                if (r < 0.5) { // Main Visor - Rounded Box
+                    x = (Math.random() - 0.5) * 1.6;
+                    y = (Math.random() - 0.5) * 0.8;
+                    const d = Math.pow(x / 0.85, 4) + Math.pow(y / 0.45, 4);
+                    if (d > 1) { x *= 0.8; y *= 0.8; }
+                    z = (Math.random() - 0.5) * 0.4 + 0.2;
+                } else if (r < 0.6) { // Left Sensor Pill
+                    const phi = Math.random() * Math.PI * 2;
+                    const rad = Math.sqrt(Math.random()) * 0.12;
+                    x = -0.45 + Math.cos(phi) * rad;
+                    y = Math.sin(phi) * rad * 1.8;
+                    z = 0.42 + (Math.random() - 0.5) * 0.05;
+                } else if (r < 0.7) { // Center Sensor Pill
+                    const phi = Math.random() * Math.PI * 2;
+                    const rad = Math.sqrt(Math.random()) * 0.12;
+                    x = 0 + Math.cos(phi) * rad;
+                    y = Math.sin(phi) * rad * 1.8;
+                    z = 0.42 + (Math.random() - 0.5) * 0.05;
+                } else if (r < 0.8) { // Right Sensor Pill
+                    const phi = Math.random() * Math.PI * 2;
+                    const rad = Math.sqrt(Math.random()) * 0.12;
+                    x = 0.45 + Math.cos(phi) * rad;
+                    y = Math.sin(phi) * rad * 1.8;
+                    z = 0.42 + (Math.random() - 0.5) * 0.05;
+                } else { // Straps - Side and Top
+                    if (Math.random() > 0.5) { // Side straps
+                        x = (Math.random() > 0.5 ? 0.8 : -0.8) + (Math.random() - 0.5) * 0.2;
+                        y = (Math.random() - 0.5) * 0.15;
+                        z = -Math.random() * 1.5;
+                    } else { // Top strap
+                        x = (Math.random() - 0.5) * 0.15;
+                        y = 0.4 + Math.random() * 0.4;
+                        z = -Math.random() * 1.2;
+                    }
+                }
+                a[j] = x * S; a[j + 1] = y * S; a[j + 2] = z * S;
+            }
+            return a;
+        }
+
+        function fallbackVision() {
+            const a = new Float32Array(N * 3);
+            const S = 2.4;
+            for (let i = 0, j = 0; i < N; i++, j += 3) {
+                const r = Math.random();
+                let x, y, z;
+                if (r < 0.8) { // Curved Visor
+                    const ang = (Math.random() - 0.5) * Math.PI * 0.9;
+                    const rad = 0.8 + (Math.random() - 0.5) * 0.1;
+                    x = Math.sin(ang) * rad;
+                    y = Math.cos(ang) * rad * 0.5;
+                    z = Math.cos(ang) * 0.3;
+                } else { // Top band
+                    x = (Math.random() - 0.5) * 1.4;
+                    y = 0.5 + Math.random() * 0.15;
+                    z = -Math.random() * 0.8;
+                }
+                a[j] = x * S; a[j + 1] = y * S; a[j + 2] = z * S;
+            }
+            return a;
+        }
+
+        // ═══════════════════════════════════════════════
+        //  THREE.JS RENDERER
+        // ═══════════════════════════════════════════════
+        const canvas = document.getElementById('webgl');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setClearColor(0x060810, 1);
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x060810, 0.018);
+        const camera = new THREE.PerspectiveCamera(56, innerWidth / innerHeight, 0.1, 100);
+        camera.position.z = 8;
+
+        const livePos = new Float32Array(makeCloud());
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(livePos, 3));
+
+        const colBuf = new Float32Array(N * 3);
+        const colAttr = new THREE.BufferAttribute(colBuf, 3);
+        geo.setAttribute('color', colAttr);
+
+        const mat = new THREE.PointsMaterial({
+            size: 0.030, vertexColors: true,
+            transparent: true, opacity: 0.92,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false, sizeAttenuation: true,
+        });
+        const pts = new THREE.Points(geo, mat);
+        scene.add(pts);
+
+        const fromBuf = new Float32Array(N * 3);
+        const toBuf = new Float32Array(N * 3);
+        const tw = { t: 0 };
+
+        // ═══════════════════════════════════════════════
+        //  COLOURS
+        // ═══════════════════════════════════════════════
+        function paint(pi) {
+            const c1 = new THREE.Color(PAGES[pi].c1), c2 = new THREE.Color(PAGES[pi].c2);
+            for (let i = 0; i < N; i++) {
+                const c = c1.clone().lerp(c2, Math.min(1, Math.max(0, Math.random() + (Math.random() - .5) * .2)));
+                colBuf[i * 3] = c.r; colBuf[i * 3 + 1] = c.g; colBuf[i * 3 + 2] = c.b;
+            }
+            colAttr.needsUpdate = true;
+        }
+
+        // ═══════════════════════════════════════════════
+        //  MORPH ENGINE
+        // ═══════════════════════════════════════════════
+        let SHAPES = {};
+        const KEYS = ['quest3', 'vision', 'fleet'];
+        let page = 0;
+        let moving = false;
+
+        function morphTo(key, dur, ease, done) {
+            fromBuf.set(livePos);
+            toBuf.set(SHAPES[key]);
+            tw.t = 0;
+            gsap.killTweensOf(tw);
+            gsap.to(tw, {
+                t: 1, duration: dur, ease,
+                onUpdate() {
+                    const p = tw.t;
+                    for (let i = 0; i < N * 3; i++) livePos[i] = fromBuf[i] + (toBuf[i] - fromBuf[i]) * p;
+                    geo.attributes.position.needsUpdate = true;
+                },
+                onComplete: done || (() => { }),
+            });
+        }
+
+        function gotoPage(next) {
+            if (moving || next === page) return;
+            if (next < 0 || next >= 3) return;
+            moving = true; page = next;
+            paint(next); updateUI(next);
+            morphTo('cloud', 0.45, 'power2.in', () => {
+                morphTo(KEYS[next], 1.4, 'power3.inOut', () => { moving = false; });
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        //  UI
+        // ═══════════════════════════════════════════════
+        function updateUI(i) {
+            const p = PAGES[i];
+            document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('on', j === i));
+            const pr = document.getElementById('prog');
+            pr.style.width = p.barW; pr.style.background = p.barG;
+            document.getElementById('glow').style.background = `radial-gradient(circle,${p.glow} 0%,transparent 70%)`;
+
+            const info = document.getElementById('info');
+            info.classList.remove('visible');
+            setTimeout(() => {
+                document.getElementById('eyebrow').innerHTML = p.eyebrow;
+                const dn = document.getElementById('dname');
+                dn.textContent = p.name;
+                dn.style.background = `linear-gradient(120deg,${p.c1},${p.c2})`;
+                dn.style.webkitBackgroundClip = 'text';
+                dn.style.webkitTextFillColor = 'transparent';
+                dn.style.backgroundClip = 'text';
+                document.getElementById('dspec').textContent = p.spec;
+                document.getElementById('dtags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+                info.classList.add('visible');
+            }, 280);
+            document.getElementById('hint').style.opacity = i === 2 ? '0' : '1';
+        }
+
+        // ═══════════════════════════════════════════════
+        //  INPUT
+        // ═══════════════════════════════════════════════
+        let lock = false;
+        function nav(d) {
+            if (lock || moving) return;
+            lock = true; setTimeout(() => { lock = false; }, 850);
+            gotoPage(page + d);
+        }
+        window.addEventListener('wheel', e => { e.preventDefault(); nav(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+        let t0 = 0;
+        window.addEventListener('touchstart', e => { t0 = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', e => { const d = t0 - e.changedTouches[0].clientY; if (Math.abs(d) > 40) nav(d > 0 ? 1 : -1); }, { passive: true });
+        window.addEventListener('keydown', e => {
+            if (['ArrowDown', 'PageDown', 's'].includes(e.key)) nav(1);
+            if (['ArrowUp', 'PageUp', 'w'].includes(e.key)) nav(-1);
+        });
+        document.querySelectorAll('.dot').forEach(d => { d.addEventListener('click', () => gotoPage(+d.dataset.page)); d.style.pointerEvents = 'all'; });
+
+        // ═══════════════════════════════════════════════
+        //  PARALLAX + RENDER
+        // ═══════════════════════════════════════════════
+        let mx = 0, my = 0;
+        window.addEventListener('mousemove', e => {
+            mx = (e.clientX / innerWidth - .5) * 2;
+            my = (e.clientY / innerHeight - .5) * 2;
+        });
+
+        const clk = new THREE.Clock();
+        (function loop() {
+            requestAnimationFrame(loop);
+            const t = clk.getElapsedTime();
+            pts.rotation.y = mx * .13 + Math.sin(t * .07) * .022;
+            pts.rotation.x = my * .08 + Math.cos(t * .05) * .012;
+            camera.position.x += (mx * .36 - camera.position.x) * .016;
+            camera.position.y += (-my * .22 - camera.position.y) * .016;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        })();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        });
+
+        // ═══════════════════════════════════════════════
+        //  LOADING HELPERS
+        // ═══════════════════════════════════════════════
+        function setP(p) { document.getElementById('lbar').style.width = p + '%'; document.getElementById('lpct').textContent = Math.round(p) + '%'; }
+        function hideLoader() {
+            const el = document.getElementById('loading');
+            el.classList.add('hidden');
+            setTimeout(() => el.classList.add('gone'), 700);
+            document.getElementById('ui').classList.add('visible');
+        }
+
+        // ═══════════════════════════════════════════════
+        //  MAIN — load images → build clouds → start
+        // ═══════════════════════════════════════════════
+        (async function main() {
+            setP(2);
+
+            // Load Quest 3 image (0→50%)
+            let q = await imageToCloud(IMAGES.quest3, N, 3.8, 28);
+            setP(50);
+            if (!q) { console.warn('[XR] Quest 3 image failed → using fallback'); q = fallbackQuest(); }
+
+            // Load Vision Pro image (50→98%)
+            let v = await imageToCloud(IMAGES.vision, N, 3.8, 28);
+            setP(98);
+            if (!v) { console.warn('[XR] Vision Pro image failed → using fallback'); v = fallbackVision(); }
+
+            setP(100);
+
+            SHAPES.cloud = makeCloud();
+            SHAPES.quest3 = q;
+            SHAPES.vision = v;
+            SHAPES.fleet = makeFleet(q);
+
+            await new Promise(r => setTimeout(r, 300));
+            hideLoader();
+
+            // Intro: scatter → Quest 3
+            paint(0); updateUI(0);
+            morphTo('quest3', 2.0, 'power3.out');
+            setTimeout(() => document.getElementById('info').classList.add('visible'), 1000);
+        })();
+    </script>
+</body>
+
+</html>
