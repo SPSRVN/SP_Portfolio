@@ -1,0 +1,26 @@
+[
+    {
+        "id": "xr-showcase",
+        "title": "Interactive XR Showcase",
+        "description": "Fully interactive Three.js point cloud experience featuring Meta Quest 3 and Vision Pro with morphing animations and immersive navigation.",
+        "tags": [
+            "Three.js",
+            "GSAP",
+            "Point Clouds"
+        ],
+        "highlight": true,
+        "link": "xr-showcase.html"
+    },
+    {
+        "id": "forklift",
+        "title": "Forklift VR Simulator",
+        "description": "Engineered a VR forklift training simulator with realistic physics and collision detection. Integrated task scoring and safety evaluation mechanisms.",
+        "tags": [
+            "Unity",
+            "VR",
+            "Physics",
+            "Training Systems"
+        ],
+        "highlight": false
+    }
+]
