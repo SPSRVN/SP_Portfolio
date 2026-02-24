@@ -115,19 +115,21 @@ body {
 .custom-cursor {
     width: 6px;
     height: 6px;
-    background: var(--color-primary);
+    background: var(--color-accent);
+    /* Changed to Magenta */
     border-radius: 50%;
     position: fixed;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 15px var(--color-primary);
+    box-shadow: 0 0 15px var(--color-accent);
 }
 
 .cursor-follower {
     width: 32px;
     height: 32px;
-    border: 1px solid rgba(0, 245, 255, 0.3);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+    /* Accent alpha */
     border-radius: 50%;
     position: fixed;
     pointer-events: none;
@@ -151,8 +153,8 @@ body {
     height: 100%;
     border-radius: 50%;
     border: 2px solid transparent;
-    border-top-color: var(--color-primary);
-    border-bottom-color: var(--color-primary);
+    border-top-color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
     animation: reticle-rotate 4s linear infinite;
     opacity: 0.6;
 }
@@ -192,8 +194,8 @@ body {
 .cursor-active .cursor-follower {
     width: 50px;
     height: 50px;
-    background: rgba(0, 245, 255, 0.1);
-    border-color: var(--color-primary);
+    background: rgba(236, 72, 153, 0.1);
+    border-color: var(--color-accent);
 }
 
 .cursor-active .cursor-follower::before {
