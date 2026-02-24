@@ -300,32 +300,32 @@ img {
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     background: transparent;
     overflow: hidden;
-    /* Clips the refractive layer */
+    /* Sharp clipping boundary */
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .glass::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -10px;
+    /* Bleed for refraction */
     z-index: -1;
     background: var(--color-surface);
-    backdrop-filter: blur(24px) saturate(160%) contrast(100%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%) contrast(100%);
+    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(30px) saturate(160%);
     filter: url(#liquid-refraction);
-    border: 1px solid var(--color-glass-border);
     border-radius: inherit;
-    box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.3),
-        inset 0 1px 1px 0 var(--color-liquid-rim);
 }
 
 .glass:hover {
     transform: translateY(-8px) scale(1.01);
+    border-color: rgba(0, 245, 255, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 .glass:hover::before {
     background: var(--color-liquid-tint);
-    border-color: rgba(0, 245, 255, 0.4);
 }
 
 /* ========================================
@@ -342,19 +342,21 @@ img {
     z-index: var(--z-nav);
     background: transparent;
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    border-radius: 40px;
+    border: 1px solid var(--color-glass-border);
 }
 
 #navbar::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -10px;
     z-index: -1;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     filter: url(#liquid-refraction);
-    border: 1px solid var(--color-glass-border);
-    border-radius: 40px;
+    border-radius: inherit;
 }
 
 #navbar.scrolled {
@@ -500,15 +502,15 @@ img {
     position: relative;
     overflow: hidden;
     color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .btn::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -5px;
     z-index: -1;
     background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     filter: url(#liquid-slab);

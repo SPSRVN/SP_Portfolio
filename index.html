@@ -69,8 +69,7 @@
                         </svg>
                         Experience XR Showcase
                     </a>
-                    <a href="assets/resume.pdf" download class="btn btn-outline"
-                        style="border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05);">
+                    <a href="assets/resume.pdf" download class="btn btn-outline">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" style="margin-right: 8px; vertical-align: middle;">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
@@ -98,7 +97,9 @@
             <!-- Subtle Slab for Buttons -->
             <filter id="liquid-slab" x="-10%" y="-10%" width="120%" height="120%">
                 <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="1" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"
+                    result="refracted" />
+                <feComposite in="refracted" in2="SourceGraphic" operator="in" />
             </filter>
         </svg>
         <div class="scroll-indicator">

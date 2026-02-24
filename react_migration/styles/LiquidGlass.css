@@ -1,0 +1,68 @@
+/* Liquid Glass Component Styles */
+.liquid-wrapper {
+    position: relative;
+    border-radius: 30px;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.liquid-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.liquid-glass-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: inherit;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.liquid-content-layer {
+    position: relative;
+    z-index: 2;
+    /* Sits sharply above the refraction */
+    padding: 24px;
+}
+
+/* Hover Dynamics */
+.hover-active:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+.hover-active:hover .liquid-glass-backdrop {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 245, 255, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Button Specials */
+.liquid-button-root .liquid-content-layer {
+    padding: 0;
+}
+
+.button-reset {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 14px 28px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: inherit;
+}
+
+.liquid-button-root.primary .liquid-glass-backdrop {
+    background: rgba(0, 245, 255, 0.1);
+    border-color: rgba(0, 245, 255, 0.3);
+}
