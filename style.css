@@ -346,13 +346,14 @@ img {
     width: 90%;
     max-width: 1200px;
     z-index: var(--z-nav);
-    background: rgba(10, 14, 26, 0.4);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(10, 14, 26, 0.2);
+    backdrop-filter: saturate(180%) contrast(105%);
+    -webkit-backdrop-filter: saturate(180%) contrast(105%);
     border: 1px solid var(--color-glass-border);
     border-radius: 40px;
     padding: 0 var(--spacing-md);
-    transition: all 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
 }
 
 #navbar.scrolled {
@@ -1195,11 +1196,15 @@ img {
     font-size: var(--font-size-lg);
     font-weight: 600;
     background: var(--color-surface);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: saturate(180%) contrast(105%);
+    -webkit-backdrop-filter: saturate(180%) contrast(105%);
     border: 1px solid var(--color-glass-border);
-    border-radius: 20px;
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    border-radius: 30px;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    /* Hardware acceleration */
 }
 
 .contact-btn:hover {
@@ -1246,9 +1251,9 @@ img {
         left: 5%;
         right: 5%;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(40px) saturate(200%);
-        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: saturate(180%) contrast(110%);
+        -webkit-backdrop-filter: saturate(180%) contrast(110%);
         padding: var(--spacing-lg);
         gap: var(--spacing-md);
         transform: translateY(-20px);
@@ -1257,6 +1262,7 @@ img {
         transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         border: 1px solid var(--color-glass-border);
         border-radius: 30px;
+        overflow: hidden;
     }
 
     .nav-menu.active {
