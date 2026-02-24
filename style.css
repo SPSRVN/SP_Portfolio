@@ -297,6 +297,7 @@ img {
     background: var(--color-surface);
     backdrop-filter: saturate(180%) contrast(105%);
     -webkit-backdrop-filter: saturate(180%) contrast(105%);
+    filter: url(#liquid-refraction);
     border: 1px solid var(--color-glass-border);
     border-radius: 30px;
     box-shadow:

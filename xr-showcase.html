@@ -234,6 +234,33 @@
             color: rgba(255, 255, 255, .14);
         }
 
+        .resume-btn {
+            position: absolute;
+            top: 26px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            letter-spacing: .25em;
+            color: rgba(255, 255, 255, .3);
+            text-decoration: none;
+            pointer-events: all;
+            transition: all .3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: saturate(150%);
+        }
+
+        .resume-btn:hover {
+            color: rgba(255, 255, 255, .8);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 245, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
         #glow {
             position: absolute;
             top: 50%;
@@ -256,6 +283,13 @@
             opacity: 0;
             transform: translateY(16px);
             transition: opacity .5s, transform .5s;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: saturate(180%) contrast(105%);
+            -webkit-backdrop-filter: saturate(180%) contrast(105%);
+            filter: url(#liquid-refraction);
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         #info.visible {
@@ -436,6 +470,16 @@
             </svg>
             PORTFOLIO
         </a>
+
+        <a href="assets/resume.pdf" download class="resume-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            RESUME
+        </a>
+
         <div class="badge">XR DEVICE SHOWCASE</div>
         <div id="glow"></div>
 
@@ -877,7 +921,7 @@
 
         // Interactive hover states
         function initCursorHovers() {
-            const targets = document.querySelectorAll('a, button, .dot, #back');
+            const targets = document.querySelectorAll('a, button, .dot, #back, .resume-btn');
             targets.forEach(t => {
                 t.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
                 t.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
@@ -955,6 +999,15 @@
             setTimeout(() => document.getElementById('info').classList.add('visible'), 1000);
         })();
     </script>
+    <!-- SVG Filter for Liquid Refraction -->
+    <svg style="display: none;">
+        <filter id="liquid-refraction">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" seed="0">
+                <animate attributeName="seed" from="0" to="1000" dur="60s" repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
 </body>
 
 </html>
