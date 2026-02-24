@@ -24,6 +24,42 @@
             font-family: 'Orbitron', monospace;
             color: #fff;
             user-select: none;
+            cursor: none;
+            /* Hide default cursor */
+        }
+
+        /* ── CUSTOM CURSOR ── */
+        .custom-cursor {
+            width: 8px;
+            height: 8px;
+            background: #00f5ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 10px #00f5ff;
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #00f5ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+            background: rgba(0, 245, 255, 0.05);
+        }
+
+        .cursor-active .cursor-follower {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 245, 255, 0.15);
+            border-color: #a855f7;
         }
 
         #webgl {
@@ -362,6 +398,10 @@
 
     <!-- on-screen debug — shows image load status -->
     <div id="dbg"></div>
+
+    <!-- Custom XR Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-follower"></div>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -758,20 +798,49 @@
         // ═══════════════════════════════════════════════
         //  PARALLAX + RENDER
         // ═══════════════════════════════════════════════
+        // ═══════════════════════════════════════════════
+        //  CUSTOM CURSOR + PARALLAX
+        // ═══════════════════════════════════════════════
+        const cursorEl = document.querySelector('.custom-cursor');
+        const followEl = document.querySelector('.cursor-follower');
         let mx = 0, my = 0;
+        let cX = 0, cY = 0, fX = 0, fY = 0;
+        let mpx = 0, mpy = 0; // for 3D parallax
+
         window.addEventListener('mousemove', e => {
-            mx = (e.clientX / innerWidth - .5) * 2;
-            my = (e.clientY / innerHeight - .5) * 2;
+            mx = e.clientX;
+            my = e.clientY;
+            mpx = (e.clientX / innerWidth - .5) * 2;
+            mpy = (e.clientY / innerHeight - .5) * 2;
         });
+
+        // Interactive hover states
+        function initCursorHovers() {
+            const targets = document.querySelectorAll('a, button, .dot, #back');
+            targets.forEach(t => {
+                t.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
+                t.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
+            });
+        }
+        initCursorHovers();
 
         const clk = new THREE.Clock();
         (function loop() {
             requestAnimationFrame(loop);
+
+            // Update Custom Cursor
+            cX += (mx - cX) * 0.2;
+            cY += (my - cY) * 0.2;
+            fX += (mx - fX) * 0.1;
+            fY += (my - fY) * 0.1;
+            if (cursorEl) { cursorEl.style.left = cX + 'px'; cursorEl.style.top = cY + 'px'; }
+            if (followEl) { followEl.style.left = fX + 'px'; followEl.style.top = fY + 'px'; }
+
             const t = clk.getElapsedTime();
-            pts.rotation.y = mx * .13 + Math.sin(t * .07) * .022;
-            pts.rotation.x = my * .08 + Math.cos(t * .05) * .012;
-            camera.position.x += (mx * .36 - camera.position.x) * .016;
-            camera.position.y += (-my * .22 - camera.position.y) * .016;
+            pts.rotation.y = mpx * .13 + Math.sin(t * .07) * .022;
+            pts.rotation.x = mpy * .08 + Math.cos(t * .05) * .012;
+            camera.position.x += (mpx * .36 - camera.position.x) * .016;
+            camera.position.y += (-mpy * .22 - camera.position.y) * .016;
             camera.lookAt(scene.position);
             renderer.render(scene, camera);
         })();

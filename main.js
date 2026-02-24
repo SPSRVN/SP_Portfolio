@@ -332,40 +332,67 @@ function initProjectModals() {
 // ========================================
 
 function initCustomCursor() {
-    const cursor = document.createElement('div');
-    cursor.classList.add('custom-cursor');
-    cursor.style.cssText = `
-        position: fixed;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #00f5ff;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 10000;
-        transition: transform 0.2s ease;
-        display: none;
-    `;
-    document.body.appendChild(cursor);
+    const cursor = document.querySelector('.custom-cursor');
+    const follower = document.querySelector('.cursor-follower');
 
-    // Only show on desktop
-    if (window.innerWidth > 768) {
-        cursor.style.display = 'block';
+    if (!cursor || !follower) return;
 
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+    let followerX = 0;
+    let followerY = 0;
+
+    // Only show and enable on desktop/pointing devices
+    if (window.matchMedia("(pointer: fine)").matches) {
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         });
 
-        // Enlarge on hover over interactive elements
-        const interactiveElements = document.querySelectorAll('a, button, .project-card');
-        interactiveElements.forEach(el => {
+        // Smooth animation loop
+        function moveCursor() {
+            // Smoothly interpolate cursor and follower positions
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+            follower.style.left = `${followerX}px`;
+            follower.style.top = `${followerY}px`;
+
+            requestAnimationFrame(moveCursor);
+        }
+        moveCursor();
+
+        // Hover states
+        const interactive = document.querySelectorAll('a, button, .project-card, .dot, .tag');
+        interactive.forEach(el => {
             el.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'scale(1.5)';
+                document.body.classList.add('cursor-active');
             });
             el.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'scale(1)';
+                document.body.classList.remove('cursor-active');
             });
         });
+
+        // Hide when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+            follower.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+            follower.style.opacity = '1';
+        });
+    } else {
+        // Disable on touch devices
+        cursor.style.display = 'none';
+        follower.style.display = 'none';
+        document.body.style.cursor = 'auto';
     }
 }
 
@@ -417,8 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initProjectModals();
     initLazyEffects();
 
-    // Optional: Custom cursor (uncomment to enable)
-    // initCustomCursor();
+    // Custom cursor (XR Style)
+    initCustomCursor();
 
     console.log('🚀 XR Portfolio initialized successfully!');
 });

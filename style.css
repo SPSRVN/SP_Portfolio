@@ -104,7 +104,48 @@ body {
     background-color: var(--color-bg);
     overflow-x: hidden;
     position: relative;
+    cursor: none;
+    /* Hide default cursor */
 }
+
+/* ========================================
+   CUSTOM XR CURSOR
+   ======================================== */
+
+.custom-cursor {
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out, opacity 0.3s ease;
+    box-shadow: 0 0 10px var(--color-primary);
+}
+
+.cursor-follower {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease-out, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+    background: rgba(0, 245, 255, 0.05);
+}
+
+/* Hover scales for links */
+.cursor-active .cursor-follower {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 245, 255, 0.15);
+    border-color: var(--color-secondary);
+}
+
 
 body::before {
     content: '';
