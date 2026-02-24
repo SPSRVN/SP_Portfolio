@@ -109,42 +109,105 @@ body {
 }
 
 /* ========================================
-   CUSTOM XR CURSOR
+   CUSTOM VR RETICLE CURSOR
    ======================================== */
 
 .custom-cursor {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background: var(--color-primary);
     border-radius: 50%;
     position: fixed;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: transform 0.1s ease-out, opacity 0.3s ease;
-    box-shadow: 0 0 10px var(--color-primary);
+    box-shadow: 0 0 15px var(--color-primary);
 }
 
 .cursor-follower {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--color-primary);
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(0, 245, 255, 0.3);
     border-radius: 50%;
     position: fixed;
     pointer-events: none;
     z-index: 9998;
     transform: translate(-50%, -50%);
-    transition: transform 0.2s ease-out, opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
-    background: rgba(0, 245, 255, 0.05);
+    transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        background 0.3s ease;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Hover scales for links */
-.cursor-active .cursor-follower {
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 245, 255, 0.15);
-    border-color: var(--color-secondary);
+/* Reticle Corners (Fancy VR brackets) */
+.cursor-follower::before,
+.cursor-follower::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    animation: reticle-rotate 4s linear infinite;
+    opacity: 0.6;
 }
+
+.cursor-follower::after {
+    width: 120%;
+    height: 120%;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: var(--color-secondary);
+    border-right-color: var(--color-secondary);
+    animation: reticle-rotate-reverse 6s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes reticle-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes reticle-rotate-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* Hover Interaction State */
+.cursor-active .cursor-follower {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 245, 255, 0.1);
+    border-color: var(--color-primary);
+}
+
+.cursor-active .cursor-follower::before {
+    animation-duration: 1s;
+    opacity: 1;
+}
+
+.cursor-active .cursor-follower::after {
+    width: 80%;
+    height: 80%;
+    animation-duration: 1.5s;
+    opacity: 0.8;
+}
+
 
 
 body::before {

@@ -28,39 +28,100 @@
             /* Hide default cursor */
         }
 
-        /* ── CUSTOM CURSOR ── */
+        /* ── CUSTOM VR RETICLE CURSOR ── */
         .custom-cursor {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: #00f5ff;
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
             z-index: 9999;
             transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
-            box-shadow: 0 0 10px #00f5ff;
+            box-shadow: 0 0 15px #00f5ff;
         }
 
         .cursor-follower {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #00f5ff;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(0, 245, 255, 0.3);
             border-radius: 50%;
             position: fixed;
             pointer-events: none;
             z-index: 9998;
             transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
-            background: rgba(0, 245, 255, 0.05);
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cursor-follower::before,
+        .cursor-follower::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #00f5ff;
+            border-bottom-color: #00f5ff;
+            animation: reticle-rotate 4s linear infinite;
+            opacity: 0.6;
+        }
+
+        .cursor-follower::after {
+            width: 120%;
+            height: 120%;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: #a855f7;
+            border-right-color: #a855f7;
+            animation: reticle-rotate-reverse 6s linear infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes reticle-rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes reticle-rotate-reverse {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
         }
 
         .cursor-active .cursor-follower {
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 245, 255, 0.15);
-            border-color: #a855f7;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 245, 255, 0.1);
+            border-color: #00f5ff;
         }
+
+        .cursor-active .cursor-follower::before {
+            animation-duration: 1s;
+            opacity: 1;
+        }
+
+        .cursor-active .cursor-follower::after {
+            width: 80%;
+            height: 80%;
+            animation-duration: 1.5s;
+            opacity: 0.8;
+        }
+
 
         #webgl {
             position: fixed;
