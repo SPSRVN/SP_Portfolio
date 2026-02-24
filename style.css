@@ -297,12 +297,10 @@ img {
     background: var(--color-surface);
     backdrop-filter: saturate(180%) contrast(105%);
     -webkit-backdrop-filter: saturate(180%) contrast(105%);
-    filter: url(#liquid-refraction);
+    filter: url(#liquid-refraction) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
     border: 1px solid var(--color-glass-border);
     border-radius: 30px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px 0 var(--color-liquid-rim);
+    box-shadow: inset 0 1px 1px 0 var(--color-liquid-rim);
     position: relative;
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -328,17 +326,19 @@ img {
     width: 90%;
     max-width: 1200px;
     z-index: var(--z-nav);
-    background: rgba(10, 14, 26, 0.2);
+    background: rgba(255, 255, 255, 0.02);
     backdrop-filter: saturate(180%) contrast(105%);
     -webkit-backdrop-filter: saturate(180%) contrast(105%);
+    filter: url(#liquid-refraction);
     border: 1px solid var(--color-glass-border);
     border-radius: 40px;
     padding: 0 var(--spacing-md);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #navbar.scrolled {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(-50%) translateY(-5px) scale(0.98);
     box-shadow: var(--shadow-lg);
 }
 
@@ -471,12 +471,12 @@ img {
     font-weight: 600;
     border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Liquid Slab Style */
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: saturate(150%) contrast(110%);
     -webkit-backdrop-filter: saturate(150%) contrast(110%);
+    filter: url(#liquid-slab);
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
     text-transform: none;
     letter-spacing: 0.2px;
