@@ -295,26 +295,37 @@ img {
    ======================================== */
 
 .glass {
+    position: relative;
+    border-radius: 30px;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    overflow: hidden;
+    /* Clips the refractive layer */
+}
+
+.glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: var(--color-surface);
     backdrop-filter: blur(24px) saturate(160%) contrast(100%);
     -webkit-backdrop-filter: blur(24px) saturate(160%) contrast(100%);
     filter: url(#liquid-refraction);
     border: 1px solid var(--color-glass-border);
-    border-radius: 30px;
+    border-radius: inherit;
     box-shadow:
         0 10px 40px rgba(0, 0, 0, 0.3),
         inset 0 1px 1px 0 var(--color-liquid-rim);
-    position: relative;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass:hover {
+    transform: translateY(-8px) scale(1.01);
+}
+
+.glass:hover::before {
     background: var(--color-liquid-tint);
     border-color: rgba(0, 245, 255, 0.4);
-    box-shadow:
-        0 15px 45px rgba(0, 0, 0, 0.6),
-        0 0 15px rgba(0, 245, 255, 0.15);
-    transform: translateY(-8px) scale(1.01);
 }
 
 /* ========================================
@@ -329,19 +340,29 @@ img {
     width: 90%;
     max-width: 1200px;
     z-index: var(--z-nav);
+    background: transparent;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     filter: url(#liquid-refraction);
     border: 1px solid var(--color-glass-border);
     border-radius: 40px;
-    padding: 0 var(--spacing-md);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #navbar.scrolled {
-    background: rgba(255, 255, 255, 0.05);
     transform: translateX(-50%) translateY(-5px) scale(0.98);
+}
+
+#navbar.scrolled::before {
+    background: rgba(255, 255, 255, 0.06);
     box-shadow: var(--shadow-lg);
 }
 
@@ -475,14 +496,30 @@ img {
     border-radius: var(--radius-full);
     cursor: pointer;
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    color: white !important;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     filter: url(#liquid-slab);
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-    text-transform: none;
-    letter-spacing: 0.2px;
+    border-radius: inherit;
+    transition: all 0.4s ease;
+}
+
+.btn:hover::before {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-primary);
 }
 
 .btn-primary {

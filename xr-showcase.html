@@ -283,13 +283,22 @@
             opacity: 0;
             transform: translateY(16px);
             transition: opacity .5s, transform .5s;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: saturate(180%) contrast(105%);
-            -webkit-backdrop-filter: saturate(180%) contrast(105%);
-            filter: url(#liquid-refraction);
             padding: 30px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        #info::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            filter: url(#liquid-refraction);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: inherit;
         }
 
         #info.visible {
