@@ -247,17 +247,44 @@
             text-decoration: none;
             pointer-events: all;
             transition: all .3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 16px;
             border-radius: 20px;
+            z-index: 10;
+        }
+
+        .resume-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: saturate(150%);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            filter: url(#liquid-refraction);
+            border-radius: inherit;
+        }
+
+        .resume-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: inherit;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .resume-btn:hover::before {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .resume-btn:hover::after {
+            border-color: rgba(0, 245, 255, 0.3);
         }
 
         .resume-btn:hover {
             color: rgba(255, 255, 255, .8);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(0, 245, 255, 0.3);
             transform: translateY(-2px);
         }
 
@@ -285,7 +312,7 @@
             transition: opacity .5s, transform .5s;
             padding: 30px;
             border-radius: 30px;
-            overflow: hidden;
+            z-index: 5;
         }
 
         #info::before {
@@ -297,8 +324,17 @@
             backdrop-filter: blur(20px) saturate(160%);
             -webkit-backdrop-filter: blur(20px) saturate(160%);
             filter: url(#liquid-refraction);
+            border-radius: inherit;
+        }
+
+        #info::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: inherit;
+            pointer-events: none;
         }
 
         #info.visible {
