@@ -447,6 +447,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Custom cursor (XR Style)
     initCustomCursor();
 
+    // Direct Resume Download Fallback
+    const resumeBtns = document.querySelectorAll('a[href$="resume.pdf"]');
+    resumeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            console.log('Resume download triggered for:', btn.href);
+            // We don't preventDefault here, but we can force it if needed
+        });
+    });
+
     console.log('🚀 XR Portfolio initialized successfully!');
 });
 
