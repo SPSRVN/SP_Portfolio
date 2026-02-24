@@ -3,18 +3,17 @@
    ======================================== */
 
 :root {
-    /* Colors - Futuristic Palette */
-    --color-bg: #0a0e1a;
-    --color-bg-secondary: #111827;
-    --color-surface: #1a1f35;
-    --color-surface-light: #252b42;
+    /* Liquid Design Palette */
+    --color-bg: #060b18;
+    --color-bg-secondary: #0a0f25;
+    --color-surface: rgba(26, 31, 53, 0.4);
+    --color-glass: rgba(255, 255, 255, 0.03);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
 
     /* Neon Accents */
     --color-primary: #00f5ff;
-    --color-primary-dark: #00b8d4;
     --color-secondary: #a855f7;
     --color-accent: #ec4899;
-    --color-success: #10b981;
 
     /* Text Colors */
     --color-text-primary: #ffffff;
@@ -23,11 +22,11 @@
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-    --gradient-secondary: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
-    --gradient-mesh: radial-gradient(at 0% 0%, rgba(0, 245, 255, 0.2) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.2) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.2) 0px, transparent 50%),
-        radial-gradient(at 0% 100%, rgba(0, 245, 255, 0.15) 0px, transparent 50%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    --gradient-liquid: radial-gradient(at 0% 0%, rgba(0, 245, 255, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(0, 245, 255, 0.1) 0px, transparent 50%);
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -216,9 +215,20 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: var(--gradient-mesh);
+    background: var(--gradient-liquid);
     z-index: var(--z-canvas);
     pointer-events: none;
+    animation: liquid-bg 20s ease infinite alternate;
+}
+
+@keyframes liquid-bg {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+
+    100% {
+        transform: scale(1.2) translate(-5%, -5%);
+    }
 }
 
 h1,
@@ -270,19 +280,44 @@ img {
    GLASSMORPHISM UTILITY
    ======================================== */
 
+/* ========================================
+   LIQUID GLASSMORPHISM UTILITY
+   ======================================== */
+
 .glass {
-    background: rgba(26, 31, 53, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
+    background: var(--color-surface);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Glass Shine Reflection */
+.glass::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    transition: transform 0.8s ease;
 }
 
 .glass:hover {
-    background: rgba(26, 31, 53, 0.75);
-    border-color: rgba(0, 245, 255, 0.3);
-    box-shadow: var(--shadow-glow);
+    background: rgba(26, 31, 53, 0.55);
+    border-color: rgba(0, 245, 255, 0.4);
+    box-shadow: 0 12px 48px 0 rgba(0, 245, 255, 0.15);
+    transform: translateY(-5px);
+}
+
+.glass:hover::before {
+    transform: translate(10%, 10%);
 }
 
 /* ========================================
@@ -291,19 +326,22 @@ img {
 
 #navbar {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
     z-index: var(--z-nav);
-    background: rgba(10, 14, 26, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all var(--transition-base);
+    background: rgba(10, 14, 26, 0.4);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 40px;
+    padding: 0 var(--spacing-md);
+    transition: all 0.4s ease;
 }
 
 #navbar.scrolled {
-    background: rgba(10, 14, 26, 0.95);
     box-shadow: var(--shadow-lg);
 }
 
@@ -824,8 +862,19 @@ img {
 }
 
 .timeline-content {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 20px;
     padding: var(--spacing-lg);
-    transition: all var(--transition-base);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.timeline-content:hover {
+    background: rgba(26, 31, 53, 0.6);
+    border-color: var(--color-primary);
+    transform: translateX(10px);
 }
 
 .timeline-date {
@@ -883,7 +932,12 @@ img {
     padding: 0;
     overflow: hidden;
     cursor: pointer;
-    transition: all var(--transition-base);
+    background: var(--color-surface);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 24px;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .project-card:hover {
@@ -931,13 +985,20 @@ img {
 
 .tag {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 6px 14px;
     font-size: var(--font-size-xs);
     font-weight: 600;
-    background: rgba(0, 245, 255, 0.1);
+    background: rgba(0, 245, 255, 0.05);
     color: var(--color-primary);
-    border: 1px solid rgba(0, 245, 255, 0.2);
+    border: 1px solid rgba(0, 245, 255, 0.15);
+    backdrop-filter: blur(5px);
     border-radius: var(--radius-full);
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background: rgba(0, 245, 255, 0.2);
+    border-color: var(--color-primary);
 }
 
 /* ========================================
@@ -951,12 +1012,19 @@ img {
 }
 
 .training-card {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 20px;
     padding: var(--spacing-lg);
-    transition: all var(--transition-base);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .training-card:hover {
-    transform: translateY(-4px);
+    background: rgba(26, 31, 53, 0.6);
+    border-color: var(--color-secondary);
+    transform: translateY(-8px);
 }
 
 .training-header {
@@ -1081,11 +1149,19 @@ img {
     padding: var(--spacing-md) var(--spacing-xl);
     font-size: var(--font-size-lg);
     font-weight: 600;
-    transition: all var(--transition-base);
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 20px;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .contact-btn:hover {
-    transform: translateY(-4px);
+    background: rgba(236, 72, 153, 0.1);
+    border-color: var(--color-accent);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(236, 72, 153, 0.15);
 }
 
 .contact-btn svg {
@@ -1099,8 +1175,9 @@ img {
 .footer {
     padding: var(--spacing-xl) 0;
     text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(10, 14, 26, 0.5);
+    border-top: 1px solid var(--color-glass-border);
+    background: rgba(6, 11, 24, 0.6);
+    backdrop-filter: blur(20px);
 }
 
 .footer p {
@@ -1223,10 +1300,24 @@ img {
 }
 
 .project-card.highlight {
-    border: 1px solid rgba(0, 245, 255, 0.25);
-    background: rgba(26, 31, 53, 0.8);
-    position: relative;
-    overflow: hidden;
+    border: 1px solid rgba(0, 245, 255, 0.3);
+    background: rgba(26, 31, 53, 0.5);
+    box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
+    animation: liquid-pulse 4s ease-in-out infinite;
+}
+
+@keyframes liquid-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+        border-color: rgba(0, 245, 255, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(0, 245, 255, 0.25);
+        border-color: rgba(0, 245, 255, 0.5);
+    }
 }
 
 .project-card.highlight::before {
