@@ -182,9 +182,11 @@
     <script>
         function handleResumeUpload() {
             const status = document.getElementById('resume-status');
+            status.innerHTML = "<strong>Local Prototype Only:</strong> Please manually copy your resume to the <code>/assets/resume.pdf</code> folder on your computer and push to GitHub.";
+            status.style.background = "rgba(255, 165, 0, 0.1)";
+            status.style.color = "#ffa500";
+            status.style.borderColor = "#ffa500";
             status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 3000);
-            console.log("Resume upload triggered locally. In a real environment, this would call a POST endpoint.");
         }
 
         function handleProjectSave() {
