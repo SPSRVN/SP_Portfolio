@@ -55,13 +55,21 @@ function initThreeBackground() {
     window.addEventListener('deviceorientation', (event) => {
         // gamma is the left-to-right tilt in degrees, where right is positive (-90 to 90)
         // beta is the front-to-back tilt in degrees, where front is positive (-180 to 180)
-        if (event.gamma !== null && event.beta !== null) {
+        if (typeof event.gamma === 'number' && typeof event.beta === 'number') {
             // clamp for a reasonable range (-45 to 45 degree tilt)
             let gamma = Math.max(-45, Math.min(45, event.gamma));
             let beta = Math.max(-45, Math.min(45, event.beta));
 
             mouseX = gamma / 45;
             mouseY = -(beta / 45); // negative because tilting forward should tilt camera down
+        }
+    });
+
+    // Mobile touch interaction fallback
+    document.addEventListener('touchmove', (event) => {
+        if (event.touches.length > 0) {
+            mouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
         }
     });
 
